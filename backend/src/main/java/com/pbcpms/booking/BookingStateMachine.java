@@ -16,7 +16,7 @@ public class BookingStateMachine {
 
     public BookingStateMachine() {
         transitions.put(BookingStatus.PENDING, EnumSet.of(BookingStatus.ASSIGNED, BookingStatus.REJECTED));
-        transitions.put(BookingStatus.ASSIGNED, EnumSet.of(BookingStatus.APPROVED, BookingStatus.REJECTED));
+        transitions.put(BookingStatus.ASSIGNED, EnumSet.of(BookingStatus.ASSIGNED, BookingStatus.APPROVED, BookingStatus.REJECTED));
         transitions.put(BookingStatus.APPROVED, EnumSet.of(BookingStatus.IN_PROGRESS));
         transitions.put(BookingStatus.IN_PROGRESS, EnumSet.of(BookingStatus.COMPLETED));
         transitions.put(BookingStatus.COMPLETED, EnumSet.noneOf(BookingStatus.class));
