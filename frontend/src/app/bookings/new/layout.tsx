@@ -3,7 +3,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { isLoggedIn, isOwner } from '@/lib/auth';
-import Layout from '@/components/Layout';
 
 export default function OwnerLayout({
   children,
@@ -24,5 +23,5 @@ export default function OwnerLayout({
     return null;
   }
 
-  return <Layout>{children}</Layout>;
+  return <>{children}</>;
 }
