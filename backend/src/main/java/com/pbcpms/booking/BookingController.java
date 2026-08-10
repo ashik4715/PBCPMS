@@ -97,4 +97,22 @@ public class BookingController {
         BookingResponse booking = bookingService.assignPilot(id, request, adminId);
         return ResponseEntity.ok(ApiResponse.success(booking, "Pilot assigned successfully"));
     }
+
+    @PutMapping("/admin/bookings/{id}/start-service")
+    public ResponseEntity<ApiResponse<BookingResponse>> startService(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        Long adminId = userRepository.findByEmail(userDetails.getUsername()).orElseThrow().getId();
+        BookingResponse booking = bookingService.startService(id, adminId);
+        return ResponseEntity.ok(ApiResponse.success(booking, "Service started"));
+    }
+
+    @PutMapping("/admin/bookings/{id}/complete-service")
+    public ResponseEntity<ApiResponse<BookingResponse>> completeService(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        Long adminId = userRepository.findByEmail(userDetails.getUsername()).orElseThrow().getId();
+        BookingResponse booking = bookingService.completeService(id, adminId);
+        return ResponseEntity.ok(ApiResponse.success(booking, "Service completed"));
+    }
 }

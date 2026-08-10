@@ -77,6 +77,24 @@ export default function AdminBookingsPage() {
     }
   };
 
+  const handleStartService = async (id: number) => {
+    try {
+      await api.put(`/api/v1/admin/bookings/${id}/start-service`);
+      fetchData();
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to start service');
+    }
+  };
+
+  const handleCompleteService = async (id: number) => {
+    try {
+      await api.put(`/api/v1/admin/bookings/${id}/complete-service`);
+      fetchData();
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to complete service');
+    }
+  };
+
   const openAssignModal = (bookingId: number) => {
     setSelectedPilot({ ...selectedPilot, [bookingId]: selectedPilot[bookingId] || 0 });
     setAssignModalBookingId(bookingId);
@@ -96,19 +114,15 @@ export default function AdminBookingsPage() {
       key: 'pilotName',
       label: 'Pilot',
       render: (booking: Booking) => {
-        const isEditable = booking.status === 'PENDING' || booking.status === 'ASSIGNED';
-        if (!isEditable) {
+        const isReassignable = booking.status === 'ASSIGNED';
+        if (!isReassignable) {
           return <span className="text-gray-700 dark:text-gray-300">{booking.pilotName || '-'}</span>;
         }
         return (
           <button
             onClick={() => openAssignModal(booking.id)}
-            className={`text-left px-2 py-1 rounded text-sm cursor-pointer hover:bg-indigo-50 dark:hover:bg-gray-700 transition-colors ${
-              booking.pilotName
-                ? 'text-indigo-600 dark:text-indigo-400 font-medium'
-                : 'text-gray-400 dark:text-gray-500 italic'
-            }`}
-            title="Click to assign pilot"
+            className="text-left px-2 py-1 rounded text-sm cursor-pointer hover:bg-indigo-50 dark:hover:bg-gray-700 transition-colors text-indigo-600 dark:text-indigo-400 font-medium"
+            title="Click to reassign pilot"
           >
             {booking.pilotName || '-'}
           </button>
@@ -133,12 +147,10 @@ export default function AdminBookingsPage() {
           {booking.status === 'PENDING' && (
             <>
               <button
-                onClick={() => handleApprove(booking.id)}
-                disabled={!booking.pilotName}
-                className="px-2 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                title={!booking.pilotName ? 'Assign a pilot first' : 'Approve booking'}
+                onClick={() => openAssignModal(booking.id)}
+                className="px-2 py-1 bg-indigo-500 text-white rounded text-sm hover:bg-indigo-600"
               >
-                Approve
+                Assign Pilot
               </button>
               <button
                 onClick={() => handleReject(booking.id)}
@@ -163,6 +175,22 @@ export default function AdminBookingsPage() {
                 Reject
               </button>
             </>
+          )}
+          {booking.status === 'APPROVED' && (
+            <button
+              onClick={() => handleStartService(booking.id)}
+              className="px-2 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+            >
+              Start Service
+            </button>
+          )}
+          {booking.status === 'IN_PROGRESS' && (
+            <button
+              onClick={() => handleCompleteService(booking.id)}
+              className="px-2 py-1 bg-purple-500 text-white rounded text-sm hover:bg-purple-600"
+            >
+              Complete Service
+            </button>
           )}
         </div>
       ),

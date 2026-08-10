@@ -2,7 +2,7 @@ package com.pbcpms.coupon;
 
 import com.pbcpms.shared.dto.ApiResponse;
 import com.pbcpms.user.UserRepository;
-import com.pbcpms.coupon.dto.CouponIssueRequest;
+import com.pbcpms.coupon.dto.CouponPurchaseRequest;
 import com.pbcpms.coupon.dto.CouponResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -32,16 +32,24 @@ public class CouponController {
         return ResponseEntity.ok(ApiResponse.success(coupons));
     }
 
+    @PostMapping("/coupons/purchase")
+    public ResponseEntity<ApiResponse<CouponResponse>> purchaseCoupon(
+            @Valid @RequestBody CouponPurchaseRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        Long ownerId = userRepository.findByEmail(userDetails.getUsername()).orElseThrow().getId();
+        CouponResponse coupon = couponService.purchaseCoupon(request, ownerId);
+        return ResponseEntity.ok(ApiResponse.success(coupon, "Coupon purchased successfully"));
+    }
+
     @GetMapping("/admin/coupons")
     public ResponseEntity<ApiResponse<List<CouponResponse>>> getAllCoupons() {
         List<CouponResponse> coupons = couponService.getAllCoupons();
         return ResponseEntity.ok(ApiResponse.success(coupons));
     }
 
-    @PostMapping("/admin/coupons/issue")
-    public ResponseEntity<ApiResponse<CouponResponse>> issueCoupon(
-            @Valid @RequestBody CouponIssueRequest request) {
-        CouponResponse coupon = couponService.issueCoupon(request);
-        return ResponseEntity.ok(ApiResponse.success(coupon, "Coupon issued successfully"));
+    @GetMapping("/admin/coupons/history")
+    public ResponseEntity<ApiResponse<List<CouponResponse>>> getCouponHistory() {
+        List<CouponResponse> coupons = couponService.getCouponPurchaseHistory();
+        return ResponseEntity.ok(ApiResponse.success(coupons));
     }
 }

@@ -67,6 +67,7 @@ export interface Coupon {
   amount: number;
   status: 'ACTIVE' | 'USED' | 'EXPIRED';
   issuedAt: string;
+  purchasedAt?: string;
   usedAt?: string;
   expiresAt: string;
 }

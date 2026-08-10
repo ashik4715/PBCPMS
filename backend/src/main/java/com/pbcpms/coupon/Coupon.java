@@ -40,6 +40,8 @@ public class Coupon {
     @Builder.Default
     private LocalDateTime issuedAt = LocalDateTime.now();
 
+    private LocalDateTime purchasedAt;
+
     private LocalDateTime usedAt;
 
     @Column(nullable = false)

@@ -1,13 +1,13 @@
 package com.pbcpms.coupon;
 
-import com.pbcpms.shared.exception.DuplicateResourceException;
 import com.pbcpms.shared.exception.ResourceNotFoundException;
 import com.pbcpms.user.User;
 import com.pbcpms.user.UserRepository;
-import com.pbcpms.coupon.dto.CouponIssueRequest;
+import com.pbcpms.coupon.dto.CouponPurchaseRequest;
 import com.pbcpms.coupon.dto.CouponResponse;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -35,8 +35,14 @@ public class CouponService {
                 .collect(Collectors.toList());
     }
 
-    public CouponResponse issueCoupon(CouponIssueRequest request) {
-        User owner = userRepository.findById(request.getOwnerId())
+    public List<CouponResponse> getCouponPurchaseHistory() {
+        return couponRepository.findAll().stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    public CouponResponse purchaseCoupon(CouponPurchaseRequest request, Long ownerId) {
+        User owner = userRepository.findById(ownerId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         String code;
@@ -49,6 +55,7 @@ public class CouponService {
                 .owner(owner)
                 .amount(request.getAmount())
                 .expiresAt(request.getExpiresAt())
+                .purchasedAt(LocalDateTime.now())
                 .build();
 
         couponRepository.save(coupon);
@@ -64,6 +71,7 @@ public class CouponService {
                 .amount(coupon.getAmount())
                 .status(coupon.getStatus())
                 .issuedAt(coupon.getIssuedAt())
+                .purchasedAt(coupon.getPurchasedAt())
                 .usedAt(coupon.getUsedAt())
                 .expiresAt(coupon.getExpiresAt())
                 .build();

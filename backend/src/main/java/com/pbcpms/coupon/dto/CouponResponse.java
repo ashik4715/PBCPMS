@@ -21,6 +21,7 @@ public class CouponResponse {
     private BigDecimal amount;
     private CouponStatus status;
     private LocalDateTime issuedAt;
+    private LocalDateTime purchasedAt;
     private LocalDateTime usedAt;
     private LocalDateTime expiresAt;
 }
